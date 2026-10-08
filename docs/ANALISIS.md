@@ -8,9 +8,9 @@ Cada fase produce datos que la siguiente consume. Sigue el orden.
 ## Mapa general: 5 fases
 
 ```
-FASE 1: Estado local        w3m-ifaces → w3m-ports
-FASE 2: Inventario LAN      w3m-scan
-FASE 3: Salud de enlaces    w3m-ping → w3m-traf
+FASE 1: Estado local        w3m-ifaces → w3m-ports → w3m-link
+FASE 2: Inventario LAN      w3m-scan → w3m-arp → w3m-dns (PTR)
+FASE 3: Salud de enlaces    w3m-ping → w3m-route → w3m-traf
 FASE 4: Inspección profunda w3m-sniff → w3m-nc
 FASE 5: Diagnóstico final   síntesis + acción
 ```
@@ -22,6 +22,11 @@ FASE 5: Diagnóstico final   síntesis + acción
 **w3m-ifaces**: confirma que tienes IP válida (DHCP si hace falta) y
 anota: tu IP, el gateway (aparece en la ruta), tu interfaz activa.
 
+**w3m-link**: estado físico — si el gateway pierde paquetes en la
+Fase 3, aquí verificas si es físico: `no-link`, `100 Mbps` en red
+gigabit (cable viejo), o errores rx creciendo (cable/cableado dañado).
+Es el paso "descarta lo físico antes de lo lógico".
+
 **w3m-ports**: haz inventario de tus propias puertas:
 - Lista cada LISTEN y su proceso: ¿todos son tuyos y esperados?
 - Cualquier `0.0.0.0:X` que no reconozcas → apúntalo para la Fase 4
@@ -32,6 +37,15 @@ anota: tu IP, el gateway (aparece en la ruta), tu interfaz activa.
 
 **w3m-scan → Escanear LAN**: inventario de la /24.
 
+**w3m-arp** tras el escaneo: cruza la caché ARP con los resultados del
+scan — cada dispositivo encontrado debe tener MAC coherente; un
+**conflicto de IP** (azul) resuelto aquí explica comportamientos raros
+tipo "la impresora funciona a veces".
+
+**w3m-dns** con tipo **PTR** para las IPs descubiertas: el reverse DNS
+suele nombrar el dispositivo (`raspberrypi.local`, `android-xx...`) —
+la forma más rápida de identificar desconocidos.
+
 Cruza los resultados:
 - Dispositivos esperados (router, tus máquinas) → confirma sus IPs
 - **Desconocidos**: identifica cada uno. En w3m-sniff filtra
@@ -41,6 +55,10 @@ Cruza los resultados:
 > **Resultado**: mapa IP↔dispositivo de tu red, lista de sospechosos.
 
 ## FASE 3 — ¿La red funciona bien? (5 min)
+
+**w3m-route** primero: confirma que existe default gateway y comprueba
+con **¿Por dónde?** que una IP externa sale por la ruta esperada (sin
+VPN inesperada capturando tráfico).
 
 **w3m-ping** sobre 3 objetivos en este orden:
 1. **Gateway** (`192.168.1.1` típico) — si pierde paquetes, el problema
@@ -83,6 +101,9 @@ Con los datos de todas las fases, el informe típico responde:
 | ¿Hay algo que no debiera? | 2 + 4 |
 | ¿La conexión es sana? | 3 (gateway→LAN→internet) |
 | ¿Qué consume mi ancho de banda? | 3 + 4 (`w3m-traf` + filtros sniff) |
+| ¿Por qué no llega a un destino concreto? | 3 (`w3m-route` ¿Por dónde?) |
+| ¿Quién es cada dispositivo? | 2 (`w3m-dns` PTR + `w3m-arp`) |
+| ¿Fallo físico o lógico? | 1 (`w3m-link` errores/carrier) |
 | ¿Mis servicios están expuestos? | 1 (LISTEN en 0.0.0.0) |
 
 **Acciones correctivas típicas**: cerrar puertos (firewall), quitar

@@ -17,6 +17,10 @@ GUIs Xlib finas, la lógica en busybox/applets CLI. Para administrar
 | `w3m-sniff` | tcpdump | captura en vivo con filtro (sintaxis tcpdump), conteo de paquetes | `tcpdump` |
 | `w3m-traf` | ntop / iptraf | tasas RX/TX por interfaz en vivo con sparkline de 2 min | `/proc/net/dev` (sin deps) |
 | `w3m-nc` | netcat | conectar a host:puerto, enviar/recibir texto — probar tus servicios | sockets directos |
+| `w3m-dns` | dig / nslookup | consultas A/AAAA/CNAME/MX/NS/PTR contra tu resolver o uno específico | `dig` (fallback `nslookup`) |
+| `w3m-route` | netstat -r / route | tabla de rutas, gateway default, y qué ruta usará una IP destino | `route -n` / `ip route` |
+| `w3m-arp` | arp | tabla ARP/vecinos con MACs, refresco por ping, detección de conflictos de IP | `arp` / `ip neigh` |
+| `w3m-link` | mii-tool | estado físico: portador, velocidad, dúplex, errores rx/tx | sysfs + `mii-tool` |
 
 ## Filosofía (heredada de w3m-apps)
 

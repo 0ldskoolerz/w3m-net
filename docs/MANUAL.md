@@ -171,6 +171,90 @@ host: 192.168.1.5    puerto: 8000    Conectar
 - `--- cerrado por el remoto ---` → el servidor cortó (normal en HTTP
   tras responder)
 
+
+---
+
+## w3m-dns — Análisis DNS
+
+**Para qué**: resolver dominios, ver registros (A/AAAA/CNAME/MX/NS/PTR),
+hacer reverse DNS, y comparar resolvers.
+
+**Uso:**
+1. Escribe el dominio en el campo principal (Tab salta al campo server)
+2. Elige tipo: **A** (IPv4), **AAAA** (IPv6), **CNAME** (alias), **MX**
+   (mail), **NS** (nameservers), **PTR** (reverse — escribe la IP)
+3. **Consultar** (o Enter)
+4. Campo server opcional: vacío = resolver del sistema; o prueba
+   `8.8.8.8`, `1.1.1.1` para comparar respuestas
+
+**Interpretación:**
+- A con varias IPs = balanceo/CDN (normal en grandes servicios)
+- Compara el mismo dominio contra tu resolver y 1.1.1.1: respuestas
+  distintas pueden indicar cacheo raro o manipulación del router
+- PTR de una IP de tu red (de w3m-scan) te da el nombre del dispositivo
+- Sin respuesta = dominio sin ese tipo de registro (usa NS para ver
+  qué servers tienen autoridad)
+
+**Motor**: `dig` si está, si no `nslookup` (busybox).
+
+---
+
+## w3m-route — Ruteo
+
+**Para qué**: ver la tabla de rutas completa y, lo más útil, saber
+**por dónde saldrá un paquete** a una IP concreta antes de enviarlo.
+
+**Uso:**
+1. Abre y verás la tabla (rutas default resaltadas en azul)
+2. Escribe una IP destino y pulsa **¿Por dónde?** — resalta la ruta
+   que aplicará (la más específica que la contiene, o la default)
+3. F5 refresca
+
+**Interpretación:**
+- `0.0.0.0  192.168.1.1` = default gateway: todo lo desconocido sale
+  por ahí. Si no existe esta línea, no tienes internet
+- Dos rutas al mismo destino con distinta métrica: gana la menor
+- ¿Por dónde? dice "ruta específica" cuando hay una más concreta que
+  la default (ej. VPN que captura `10.0.0.0/8`) — clave para entender
+  por qué algo no sale por donde esperabas
+
+---
+
+## w3m-arp — Tabla ARP
+
+**Para qué**: ver qué MAC corresponde a cada IP de tu red y detectar
+**conflictos de IP** (dos MACs pidiendo la misma IP).
+
+**Uso:**
+1. **Refrescar** — lee la caché ARP actual
+2. **Hacer ping a todas** — pinga cada IP de la tabla para repoblar la
+   caché (lento, ~1 s por entrada)
+3. F5 = refrescar
+
+**Interpretación:**
+- Cada línea = un dispositivo real que ha hablado contigo
+- Entrada en azul = **conflicto**: misma IP respondió con dos MACs —
+  DHCP duplicado típico o suplantación; investiga con w3m-scan
+- `incomplete` = la IP no respondió ARP (caída o filtrada)
+
+---
+
+## w3m-link — Estado del enlace
+
+**Para qué**: la capa física: ¿hay portador (cable/reds)?, velocidad,
+dúplex, y errores de transmisión acumulados.
+
+**Uso:** solo **Refrescar** (F5). Sin botones, lee sysfs.
+
+**Interpretación:**
+- `CARRIER` = enlace físico presente; `no-link` = sin cable o wifi
+  desconectado
+- `100 Mbps` cuando tu red es gigabit = cable malo/Cat5 antiguo: renegoció
+  abajo
+- `err: rx=N` creciendo entre refrescos = ruido eléctrico o NIC fallando
+  (cambia cable antes de culpar al driver)
+- `full` en duplex; `half` indica problema de negociación (hub antiguo)
+
 ---
 
 ## Requisitos por app
