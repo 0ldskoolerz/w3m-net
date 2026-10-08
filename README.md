@@ -14,6 +14,9 @@ GUIs Xlib finas, la lógica en busybox/applets CLI. Para administrar
 | `w3m-ifaces` | ifconfig / netcfg | interfaces (-a), DHCP (udhcpc), up/down, escaneo wifi | `ifconfig`/`ip`, `udhcpc`, `iwlist` |
 | `w3m-ports` | netstat | puertos abiertos (LISTEN resaltado) y conexiones activas | `netstat`/`ss` |
 | `w3m-scan` | nmap / barrido ping | inventario de tu LAN /24: detecta gateway, hosts activos y MACs | `nmap -sn` (o barrido ping si no hay nmap) |
+| `w3m-sniff` | tcpdump | captura en vivo con filtro (sintaxis tcpdump), conteo de paquetes | `tcpdump` |
+| `w3m-traf` | ntop / iptraf | tasas RX/TX por interfaz en vivo con sparkline de 2 min | `/proc/net/dev` (sin deps) |
+| `w3m-nc` | netcat | conectar a host:puerto, enviar/recibir texto — probar tus servicios | sockets directos |
 
 ## Filosofía (heredada de w3m-apps)
 
@@ -43,6 +46,13 @@ cp package/w3m-net.mk /ruta/w3m-linux/package/w3m-net/w3m-net.mk
 
 Y para que nmap esté disponible en la distro, añade también
 `BR2_PACKAGE_NMAP=y` al defconfig.
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [docs/MANUAL.md](docs/MANUAL.md) | Manual detallado de cada aplicación: uso, interpretación de resultados, atajos y requisitos |
+| [docs/ANALISIS.md](docs/ANALISIS.md) | Metodología de análisis de red completo combinando las 7 apps en 5 fases, con ejemplo real paso a paso |
 
 ## Uso responsable
 

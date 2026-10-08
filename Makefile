@@ -6,7 +6,7 @@ X11_CFLAGS := $(shell pkg-config --cflags x11 2>/dev/null)
 X11_LIBS   := $(shell pkg-config --libs x11 2>/dev/null || echo -lX11)
 
 COMMON := src/ui.c src/applet.c
-APPS   := w3m-ping w3m-ifaces w3m-ports w3m-scan
+APPS   := w3m-ping w3m-ifaces w3m-ports w3m-scan w3m-sniff w3m-traf w3m-nc
 
 .PHONY: all clean
 
@@ -23,6 +23,15 @@ w3m-ports: src/ports.c $(COMMON) src/ui.h src/applet.h
 
 w3m-scan: src/scan.c $(COMMON) src/ui.h src/applet.h
 	$(CC) $(CFLAGS) $(X11_CFLAGS) -o $@ src/scan.c $(COMMON) $(X11_LIBS)
+
+w3m-sniff: src/sniff.c $(COMMON) src/ui.h src/applet.h
+	$(CC) $(CFLAGS) $(X11_CFLAGS) -o $@ src/sniff.c $(COMMON) $(X11_LIBS)
+
+w3m-traf: src/traf.c $(COMMON) src/ui.h src/applet.h
+	$(CC) $(CFLAGS) $(X11_CFLAGS) -o $@ src/traf.c $(COMMON) $(X11_LIBS)
+
+w3m-nc: src/nc.c $(COMMON) src/ui.h src/applet.h
+	$(CC) $(CFLAGS) $(X11_CFLAGS) -o $@ src/nc.c $(COMMON) $(X11_LIBS)
 
 clean:
 	rm -f $(APPS)
