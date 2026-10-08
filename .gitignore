@@ -1,0 +1,11 @@
+# build artifacts
+w3m-ping
+w3m-ifaces
+w3m-ports
+w3m-scan
+*.o
+
+# editor / OS
+*.swp
+*~
+.DS_Store
