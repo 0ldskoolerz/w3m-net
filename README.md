@@ -58,6 +58,14 @@ Y para que nmap esté disponible en la distro, añade también
 | [docs/MANUAL.md](docs/MANUAL.md) | Manual detallado de cada aplicación: uso, interpretación de resultados, atajos y requisitos |
 | [docs/ANALISIS.md](docs/ANALISIS.md) | Metodología de análisis de red completo combinando las 7 apps en 5 fases, con ejemplo real paso a paso |
 
+## El ecosistema
+
+- [W3M](https://github.com/0ldskoolerz/W3M) — el gestor de ventanas
+- [w3m-apps](https://github.com/0ldskoolerz/w3m-apps) — apps del
+  escritorio (explorador, terminal, tareas...), misma filosofía
+- [w3m-linux](https://github.com/0ldskoolerz/w3m-linux) — distro
+  completa; w3m-net ya está integrado como paquete (v0.1.0)
+
 ## Uso responsable
 
 w3m-scan y w3m-ping son para auditar **tu propia red** (inventario de
